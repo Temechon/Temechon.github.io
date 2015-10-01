@@ -18,7 +18,8 @@ window.addEventListener("DOMContentLoaded", function() {
         {name : "head", src : "assets/vaultboy.png" },
         {name : "vault11", src : "assets/vault11.png" },
         {name : "bigboy", src : "assets/bigvaultboy.png" },
-        {name : "bigboyred", src : "assets/bigvaultboy_red.png" }
+        {name : "bigboyred", src : "assets/bigvaultboy_red.png" },
+        {name : "bgui", src : "assets/bgui.png" }
     ];
 
     toLoad.forEach(function(obj) {
@@ -31,11 +32,19 @@ window.addEventListener("DOMContentLoaded", function() {
     loader.onFinish = function() {
 
         init3d(scene, canvas);
-        scene.activeCamera.layerMask    = 1;
         setTimeout(function() {
-
             /* GUI CREATION when all texture are loaded*/
-            var gui = new bGUI.GUISystem(scene, 1200, 780);
+            var gui = new bGUI.GUISystem(scene, engine.getRenderWidth(), engine.getRenderHeight());
+            gui.enableClick();
+
+            // bGUI logo
+            var logo = new bGUI.GUIPanel("bgui", assets["bgui"], null, gui);
+            logo.relativePosition(new BABYLON.Vector3(0.05, 0.9, 0));
+            logo.onClick = function() {
+                gui.setVisible(!gui.isVisible());
+                logo.setVisible(true);
+            };
+
             // The vault boy head
             var head = new bGUI.GUIPanel("head", assets["head"], null, gui);
             head.guiposition(new BABYLON.Vector3(100, 100, 0));
@@ -70,9 +79,11 @@ window.addEventListener("DOMContentLoaded", function() {
             vault.relativePosition(new BABYLON.Vector3(0.5,0.85,0));
             vault.onClick = function() {
                 animate(boy.mesh, 60);
-            }
+            };
 
-        }, 10)
+            gui.updateCamera();
+
+        }, 10);
         engine.runRenderLoop(function() {
             scene.render();
         });
@@ -87,15 +98,10 @@ function init3d (scene, canvas) {
     var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
     var material = new BABYLON.StandardMaterial("kosh", scene);
     var sphere1 = BABYLON.Mesh.CreateSphere("Sphere1", 32, 3, scene);
-    sphere1.layerMask = 1;
     var sphere2 = BABYLON.Mesh.CreateSphere("Sphere2", 32, 3, scene);
-    sphere2.layerMask = 1;
     var sphere3 = BABYLON.Mesh.CreateSphere("Sphere3", 32, 3, scene);
-    sphere3.layerMask = 1;
     var sphere4 = BABYLON.Mesh.CreateSphere("Sphere4", 32, 3, scene);
-    sphere4.layerMask = 1;
     var sphere5 = BABYLON.Mesh.CreateSphere("Sphere5", 32, 3, scene);
-    sphere5.layerMask = 1;
     var light = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(-17.6, 18.8, -49.9), scene);
 
     camera.setPosition(new BABYLON.Vector3(-15, 3, 0));
@@ -209,7 +215,6 @@ function init3d (scene, canvas) {
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skybox.material = skyboxMaterial;
-    skybox.layerMask = 1;
 
 }
 
